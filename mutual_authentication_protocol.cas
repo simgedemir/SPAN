@@ -1,0 +1,33 @@
+protocol FUSE2;
+identifiers
+IoT, IHG, VDR : user;          
+Update, UUID1, TypePs, UUID2, Verify, CH1, CH2, MSG, IDPSiot, Cred1, Cred2: number;
+HMAC, Proof : function; 
+
+messages
+1. VDR -> IHG : Update, UUID1, TypePs, IDPSiot
+2. IHG => IoT : IDPSiot
+3. IoT => IHG : Verify
+4. IHG -> VDR : Update, UUID1, TypePs, UUID2, Verify
+5. VDR -> IHG : Update, UUID1, TypePs, UUID2, CH1
+6. IHG => IoT : CH1
+7. IoT => IHG : Proof(Cred1,CH1), CH2, HMAC(CH2)
+8. IHG -> VDR : Update, UUID1, TypePs, UUID2, Proof(Cred1,CH1), CH2, HMAC(CH2)
+9. VDR -> IHG : Update, UUID1, TypePs, UUID2, Proof(Cred2,CH2), MSG, HMAC(MSG)
+10.IHG => IoT : Proof(Cred2,CH2), MSG, HMAC(MSG)
+
+knowledge
+IoT	: IoT, IHG, VDR, Verify, IDPSiot, TypePs, Update, Cred1;
+IHG	: IoT, IHG, VDR, IDPSiot, TypePs, Update;
+VDR	: IoT, IHG, VDR, Verify, IDPSiot, TypePs, Update, Cred2;
+
+session_instances
+[IoT:iot, IHG:ihg, VDR:vendor, Update:update, Verify: verify, MSG: msg, IDPSiot: idpsIot, TypePs: type];
+
+
+intruder_knowledge
+vendor, ihg;
+
+goal
+  VDR authenticates IoT on Cred1;
+  IoT authenticates VDR on Cred2;
